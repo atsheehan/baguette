@@ -1,3 +1,5 @@
+@(implicit request: RequestHeader)
+
 @main("Space Wars") {
   <canvas id="game-canvas" width="640" height="480">
     Canvas not supported in your browser.
@@ -7,6 +9,8 @@
     <h1>Welcome to Space Wars!</h1>
 
   </div>
+
+  <span id="websocket-url" class="hidden" data-url="@routes.Game.gameSocket.webSocketURL()" />
 
   <script src="@routes.Assets.at("javascripts/space_wars.js")"></script>
 }

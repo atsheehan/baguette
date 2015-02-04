@@ -2,6 +2,10 @@ body {
   background: #aaa;
 }
 
+.hidden {
+  display: none;
+}
+
 #game-canvas {
   margin-left: auto;
   margin-right: auto;
