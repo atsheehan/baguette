@@ -12,14 +12,13 @@ object Game extends Controller {
     Ok(views.html.game.index(request))
   }
 
-  def gameSocket = WebSocket.using[String] { implicit request =>
-    println("connected")
+  def gameSocket = WebSocket.using[String] { request =>
     val in = Iteratee.foreach[String] { chunk =>
       println(chunk)
     }
 
     val out = Enumerator.repeatM {
-      Promise.timeout("hi", 3.seconds)
+      Promise.timeout("""[{"x": 30, "y": 30, "user": "atsheehan"}]""", 3.seconds)
     }
 
     (in, out)

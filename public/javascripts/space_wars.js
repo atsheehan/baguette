@@ -25,6 +25,8 @@ $(document).ready(function() {
     ctx.fill();
   }
 
+  var positions = [];
+
   ws = new WebSocket($("#websocket-url").data("url"));
 
   var canvas = document.getElementById("game-canvas");
@@ -33,15 +35,15 @@ $(document).ready(function() {
   var SCREEN_WIDTH = ctx.canvas.width;
   var SCREEN_HEIGHT = ctx.canvas.height;
 
-  var position = { x: SCREEN_WIDTH / 2, y: SCREEN_HEIGHT / 2 };
-
   function draw() {
     ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    drawCircle(position.x, position.y, 30, "blue");
+
+    for (var i = 0; i < positions.length; i++) {
+      drawCircle(positions[i].x, positions[i].y, 30, "blue");
+    }
   }
 
-  function tick() {
-  }
+  function tick() {}
 
   function loop(time) {
     tick();
@@ -54,23 +56,25 @@ $(document).ready(function() {
 
   function keyDown(event) {
     var handled = true;
+    var action = null;
 
     switch (event.keyCode) {
 
     case UP_KEY:
-      position.y -= 10;
+      action = "up";
       break;
 
     case DOWN_KEY:
-      position.y += 10;
+      action = "down";
       break;
 
     case LEFT_KEY:
-      position.x -= 10;
+      action = "left";
       break;
 
     case RIGHT_KEY:
-      position.x += 10;
+      action = "right";
+      // position.x += 10;
       break;
 
     default:
@@ -79,7 +83,7 @@ $(document).ready(function() {
     }
 
     if (handled) {
-      ws.send(position);
+      ws.send(action);
       event.preventDefault();
     }
   }
@@ -94,16 +98,7 @@ $(document).ready(function() {
 
   run();
 
-
-  // ws.onmessage = function(msg) {
-  //   $("<li>").text(msg.data).appendTo("#messages");
-  // }
-
-  // $("#chatform").submit(function() {
-  //   ws.send($("#text").val());
-  //   $("#text").val("").focus();
-  //   return false;
-  // });
-  // });
-
+  ws.onmessage = function(msg) {
+    positions = JSON.parse(msg.data);
+  }
 });
