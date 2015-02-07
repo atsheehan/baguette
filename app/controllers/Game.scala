@@ -1,3 +1,4 @@
+
 package controllers
 
 import scala.concurrent.duration.DurationInt
@@ -45,16 +46,24 @@ class World extends Actor {
     case Join() => {
       println("player joined")
 
-      val player = new Player(playerIndex, 0f, 0f)
+      val player = new Player(playerIndex, 100f, 100f)
       players = player :: players
       playerIndex += 1
 
       val iteratee = Iteratee.foreach[String] { command =>
+        var matched = true
+        val SPEED = 10f
+
         command match {
-          case "left" => player.x -= 1f
-          case "right" => player.x += 1f
-          case "up" => player.y -= 1f
-          case "down" => player.y += 1f
+          case "left" => player.x -= SPEED
+          case "right" => player.x += SPEED
+          case "up" => player.y -= SPEED
+          case "down" => player.y += SPEED
+          case _ => matched = false
+        }
+
+        if (matched) {
+          self ! Broadcast()
         }
       }
 
@@ -62,7 +71,6 @@ class World extends Actor {
     }
 
     case Broadcast() => {
-      println("BROADCASTING")
       channel.push(Json.toJson(players).toString)
     }
   }
