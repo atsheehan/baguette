@@ -1,20 +1,16 @@
-
 package controllers
 
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import akka.actor.{ Actor, Props, actorRef2Scala }
-import akka.actor.Actor._
+import akka.actor.{Actor, Props, actorRef2Scala}
 import akka.pattern.ask
 import akka.util.Timeout
 import play.api.Play.current
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
 import play.api.libs.concurrent.Akka
-import play.api.libs.concurrent.Promise
-import play.api.libs.iteratee.{ Concurrent, Enumerator, Iteratee }
-import play.api.mvc.{ Action, Controller, WebSocket }
+import play.api.libs.functional.syntax._
+import play.api.libs.iteratee.{Concurrent, Enumerator, Iteratee}
+import play.api.libs.json._
+import play.api.mvc.{Action, Controller, WebSocket}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 
 object Game extends Controller {
@@ -27,7 +23,6 @@ object Game extends Controller {
   }
 
   def gameSocket = WebSocket.async { request =>
-    println("bloop")
     val channel = world ? Join()
     channel.mapTo[(Iteratee[String, _], Enumerator[String])]
   }
@@ -36,6 +31,7 @@ object Game extends Controller {
 case class Player(val id: Int, var x: Float, var y: Float)
 case class Join()
 case class Broadcast()
+case class Leave(id: Int)
 
 class World extends Actor {
   var playerIndex = 0
@@ -65,6 +61,8 @@ class World extends Actor {
         if (matched) {
           self ! Broadcast()
         }
+      }.map { _ =>
+        self ! Leave(player.id)
       }
 
       sender ! (iteratee, enumerator)
@@ -72,6 +70,10 @@ class World extends Actor {
 
     case Broadcast() => {
       channel.push(Json.toJson(players).toString)
+    }
+
+    case Leave(id) => {
+      players = players.filter(_.id != id)
     }
   }
 
