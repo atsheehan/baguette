@@ -1,21 +1,4 @@
 $(document).ready(function() {
-  var SPACE_KEY = 32;
-  var A_KEY = 65;
-  var Q_KEY = 81;
-  var P_KEY = 80;
-  var L_KEY = 76;
-  var LEFT_KEY = 37;
-  var UP_KEY = 38;
-  var RIGHT_KEY = 39;
-  var DOWN_KEY = 40;
-
-  function drawRect(x, y, w, h, color) {
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    ctx.fillRect(x, y, w, h);
-  }
-
   function drawCircle(x, y, radius, color) {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
@@ -25,8 +8,6 @@ $(document).ready(function() {
     ctx.fill();
   }
 
-  var positions = [];
-
   ws = new WebSocket($("#websocket-url").data("url"));
 
   var canvas = document.getElementById("game-canvas");
@@ -35,18 +16,52 @@ $(document).ready(function() {
   var SCREEN_WIDTH = ctx.canvas.width;
   var SCREEN_HEIGHT = ctx.canvas.height;
 
+  var player = {
+    id: 0,
+    pos: new Vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
+    vel: new Vec2(0, 0),
+    accel: new Vec2(0.1, 0.2),
+    heading: new Vec2(0, -1)
+  }
+
+  var ships = [player];
+
   function draw() {
     ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    for (var i = 0; i < positions.length; i++) {
-      drawCircle(positions[i].x, positions[i].y, 30, "blue");
+    for (var i = 0; i < ships.length; i++) {
+      drawCircle(ships[i].pos.x, ships[i].pos.y, 30, "blue");
     }
   }
 
-  function tick() {}
+  var framesPerSecond = 30;
+  var millisecondsPerFrame = (1 / framesPerSecond) * 1000;
+  var millisecondsLastTick = 0;
+  var timeCounter = 0;
+
+  function tick(milliseconds) {
+    var timeElapsed = milliseconds - millisecondsLastTick;
+    millisecondsLastTick = milliseconds;
+    timeCounter += timeElapsed;
+
+    var counter = 0;
+
+    while (timeCounter > millisecondsPerFrame) {
+      counter += 1;
+
+      for (var i = 0; i < ships.length; i++) {
+        var ship = ships[i];
+
+        ship.vel = ship.vel.add(ship.accel);
+        ship.pos = ship.pos.add(ship.vel);
+      }
+
+      timeCounter -= millisecondsPerFrame;
+    }
+  }
 
   function loop(time) {
-    tick();
+    tick(time);
     draw();
 
     window.requestAnimationFrame(function(time) {
@@ -99,6 +114,7 @@ $(document).ready(function() {
   run();
 
   ws.onmessage = function(msg) {
-    positions = JSON.parse(msg.data);
+    console.log(msg.data);
+    // positions = JSON.parse(msg.data);
   }
 });
