@@ -22,6 +22,10 @@ class World extends Actor {
     Json.obj("ships" -> ships.map { ship =>
         Json.obj(
           "id" -> ship.id,
+          "heading" -> Json.obj(
+            "x" -> ship.heading.x,
+            "y" -> ship.heading.y
+          ),
           "accel" -> Json.obj(
             "x" -> ship.accel.x,
             "y" -> ship.accel.y
@@ -61,6 +65,15 @@ class World extends Actor {
       ships = ship :: ships
 
       val iteratee = Iteratee.foreach[String] { command =>
+        command match {
+          case "engineOn" => ship.toggleEngine(true)
+          case "engineOff" => ship.toggleEngine(false)
+          case "startTurnCC" => ship.startTurning(Rotation.CounterClockwise)
+          case "startTurnC" => ship.startTurning(Rotation.Clockwise)
+          case "stopTurnCC" => ship.stopTurning(Rotation.CounterClockwise)
+          case "stopTurnC" => ship.stopTurning(Rotation.Clockwise)
+        }
+
         ship.accelerate()
       }.map { _ =>
         self ! Leave(ship.id)

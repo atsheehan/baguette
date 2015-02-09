@@ -31,7 +31,7 @@ class Ship(val id: Int, x: Float, y: Float) {
       _accel = Vec2.ZERO
     }
 
-    rotating match {
+    rotating.map {
       case Rotation.Clockwise => _heading = heading.rotate(RotationSpeed)
       case Rotation.CounterClockwise => _heading = heading.rotate(-RotationSpeed)
     }
@@ -49,9 +49,7 @@ class Ship(val id: Int, x: Float, y: Float) {
   }
 
   def stopTurning(rotation: Rotation.Value) {
-    if (_rotating == rotation) {
-      _rotating = None
-    }
+    _rotating = None
   }
 
   def toggleEngine(value: Boolean) {
