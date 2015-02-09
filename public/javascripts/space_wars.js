@@ -1,42 +1,13 @@
 $(document).ready(function() {
-  function drawTriangle(pos, heading, radius, color) {
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    var firstLeg = heading.lengthTo(radius);
-    var secondLeg = firstLeg.rotate(3 * Math.PI / 4);
-    var thirdLeg = firstLeg.rotate(5 * Math.PI / 4);
-
-    ctx.beginPath();
-    ctx.moveTo(pos.x + firstLeg.x, pos.y + firstLeg.y);
-    ctx.lineTo(pos.x + secondLeg.x, pos.y + secondLeg.y);
-    ctx.lineTo(pos.x + thirdLeg.x, pos.y + thirdLeg.y);
-    ctx.fill();
-  }
-
-  function drawCircle(x, y, radius, color) {
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI * 2, false);
-    ctx.fill();
-  }
-
-  var canvas = document.getElementById("game-canvas");
-  var ctx = canvas.getContext("2d");
-
-  var SCREEN_WIDTH = ctx.canvas.width;
-  var SCREEN_HEIGHT = ctx.canvas.height;
-
+  var view = new View(document.getElementById("game-canvas"));
   var player = new Ship(0, new Vec2(100, 100));
   var ships = [player];
 
   function draw() {
-    ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    view.clearScreen();
 
     for (var i = 0; i < ships.length; i++) {
-      drawTriangle(ships[i].pos, ships[i].heading, 30, "blue");
+      view.drawTriangle(ships[i].pos, ships[i].heading, 30, "blue");
     }
   }
 
