@@ -1,30 +1,34 @@
-@(implicit request: RequestHeader)
+@()(implicit request: RequestHeader)
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BAGUETTE</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
 
-@main("Space Wars") {
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
+      #game-canvas {
+        margin-left: auto;
+        margin-right: auto;
+        position: absolute;
+        background: #000;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game-canvas" width="1500" height="800">
+      Canvas not supported in your browser.
+    </canvas>
 
-    #game-canvas {
-      margin-left: auto;
-      margin-right: auto;
-      position: absolute;
-      background: #000;
-      width: 100%;
-      height: 100%;
-    }
-  </style>
+    <span id="websocket-url" class="hidden" data-url="@routes.Game.gameSocket.webSocketURL()" />
 
-  <canvas id="game-canvas" width="1500" height="800">
-    Canvas not supported in your browser.
-  </canvas>
-
-  <span id="websocket-url" class="hidden" data-url="@routes.Game.gameSocket.webSocketURL()" />
-
-  <script src="@routes.Assets.at("javascripts/key_codes.js")"></script>
-  <script src="@routes.Assets.at("javascripts/models.js")"></script>
-  <script src="@routes.Assets.at("javascripts/view.js")"></script>
-  <script src="@routes.Assets.at("javascripts/space_wars.js")"></script>
-}
+    <script src="@routes.Assets.at("javascripts/key_codes.js")"></script>
+    <script src="@routes.Assets.at("javascripts/models.js")"></script>
+    <script src="@routes.Assets.at("javascripts/view.js")"></script>
+    <script src="@routes.Assets.at("javascripts/space_wars.js")"></script>
+  </body>
+</html>
