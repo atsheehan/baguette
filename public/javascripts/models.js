@@ -66,9 +66,9 @@ Ship.prototype.update = function() {
     this.accel = new Vec2(0, 0);
   }
 
-  if (this.rotating === "left") {
+  if (this.rotating === "counter-clockwise") {
     this.heading = this.heading.rotate(-Math.PI / 20);
-  } else if (this.rotating === "right") {
+  } else if (this.rotating === "clockwise") {
     this.heading = this.heading.rotate(Math.PI / 20);
   }
 

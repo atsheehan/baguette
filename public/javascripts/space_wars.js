@@ -78,11 +78,11 @@ $(document).ready(function() {
       break;
 
     case LEFT_KEY:
-      player.startTurning("left");
+      player.startTurning("counter-clockwise");
       break;
 
     case RIGHT_KEY:
-      player.startTurning("right");
+      player.startTurning("clockwise");
       break;
 
     default:
@@ -105,11 +105,11 @@ $(document).ready(function() {
       break;
 
     case LEFT_KEY:
-      player.stopTurning("left");
+      player.stopTurning("counter-clockwise");
       break;
 
     case RIGHT_KEY:
-      player.stopTurning("right");
+      player.stopTurning("clockwise");
       break;
 
     default:
