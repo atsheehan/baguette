@@ -16,6 +16,6 @@ class Ship(val id: Int, x: Float, y: Float) {
   }
 
   def accelerate() {
-    _accel = Vec2(1f, 0f)
+    _accel = Vec2(0.01f, 0f)
   }
 }
