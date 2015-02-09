@@ -3,6 +3,7 @@ package models
 import play.api.libs.json.Json
 import akka.actor.Actor
 import play.api.libs.iteratee.{Concurrent, Iteratee}
+import scala.compat.Platform
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class World extends Actor {
@@ -12,11 +13,23 @@ class World extends Actor {
 
   private var shipIndex = 0
   private var ships = List[Ship]()
+  private val framesPerSecond = 30.0
+  private val millisecondsPerFrame = ((1.0 / framesPerSecond) * 1000L).asInstanceOf[Long]
+  private var millisecondsLastTick = Platform.currentTime
+  private var timeCounter = 0L
 
   def json = {
     Json.obj("ships" -> ships.map { ship =>
         Json.obj(
           "id" -> ship.id,
+          "accel" -> Json.obj(
+            "x" -> ship.accel.x,
+            "y" -> ship.accel.y
+          ),
+          "vel" -> Json.obj(
+            "x" -> ship.vel.x,
+            "y" -> ship.vel.y
+          ),
           "pos" -> Json.obj(
             "x" -> ship.pos.x,
             "y" -> ship.pos.y
@@ -26,21 +39,29 @@ class World extends Actor {
     )
   }
 
+  var counter = 0
+
   def receive = {
-    case Update => {
-      ships.foreach(_.update)
+    case Update() => {
+      val milliseconds = Platform.currentTime
+      val timeElapsed = milliseconds - millisecondsLastTick
+      millisecondsLastTick = milliseconds;
+      timeCounter += timeElapsed
+
+      while (timeCounter > millisecondsPerFrame) {
+        ships.foreach(_.update)
+        timeCounter -= millisecondsPerFrame
+        counter += 1
+      }
     }
 
     case Join() => {
       val ship = new Ship(shipIndex, 100f, 100f)
-      shipIndex += 1
 
       ships = ship :: ships
 
       val iteratee = Iteratee.foreach[String] { command =>
         ship.accelerate()
-        self ! Update
-
       }.map { _ =>
         self ! Leave(ship.id)
       }

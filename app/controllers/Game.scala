@@ -15,8 +15,10 @@ import scala.language.postfixOps
 object Game extends Controller {
   implicit val timeout = Timeout(1 seconds)
   val world = Akka.system.actorOf(Props[World])
-  Akka.system.scheduler.schedule(0 seconds, 1 seconds, world, World.Update)
-  Akka.system.scheduler.schedule(0 seconds, 1 seconds, world, World.Broadcast)
+  Akka.system.scheduler.schedule(0 seconds, 1 seconds,
+    world, World.Broadcast())
+  Akka.system.scheduler.schedule(0 milliseconds, 50 milliseconds,
+    world, World.Update())
 
   def index = Action { request =>
     Ok(views.html.game.index(request))
