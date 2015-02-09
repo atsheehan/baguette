@@ -130,6 +130,20 @@ $(document).ready(function() {
 
   ws.onmessage = function(msg) {
     console.log(msg.data);
-    // positions = JSON.parse(msg.data);
+    worldState = JSON.parse(msg.data);
+
+    for (var i = 0; i < worldState.ships.length; i++) {
+      for (var j = 0; j < ships.length; j++) {
+        if (ships[j].id === worldState.ships[i].id) {
+          ships[j].accel.x = worldState.ships[i].accel.x;
+          ships[j].accel.y = worldState.ships[i].accel.y;
+          ships[j].vel.x = worldState.ships[i].vel.x;
+          ships[j].vel.y = worldState.ships[i].vel.y;
+          ships[j].pos.x = worldState.ships[i].pos.x;
+          ships[j].pos.y = worldState.ships[i].pos.y;
+          break;
+        }
+      }
+    }
   }
 });
