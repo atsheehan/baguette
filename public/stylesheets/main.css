@@ -1,25 +1,3 @@
-body {
-  background: #aaa;
-}
-
 .hidden {
   display: none;
-}
-
-#game-canvas {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  background: #000;
-  border: 25px inset #aaa;
-}
-
-#instructions {
-  width: 970px;
-  background: #eaeaea;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 1em;
-  padding: 1em;
-  border: 10px inset #aaa;
 }
