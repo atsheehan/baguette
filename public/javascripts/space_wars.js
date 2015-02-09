@@ -23,22 +23,13 @@ $(document).ready(function() {
     ctx.fill();
   }
 
-  ws = new WebSocket($("#websocket-url").data("url"));
-
   var canvas = document.getElementById("game-canvas");
   var ctx = canvas.getContext("2d");
 
   var SCREEN_WIDTH = ctx.canvas.width;
   var SCREEN_HEIGHT = ctx.canvas.height;
 
-  var player = {
-    id: 0,
-    pos: new Vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
-    vel: new Vec2(0, 0),
-    accel: new Vec2(0, 0),
-    heading: new Vec2(0, -1)
-  }
-
+  var player = new Ship(0, new Vec2(100, 100));
   var ships = [player];
 
   function draw() {
@@ -59,16 +50,9 @@ $(document).ready(function() {
     millisecondsLastTick = milliseconds;
     timeCounter += timeElapsed;
 
-    var counter = 0;
-
     while (timeCounter > millisecondsPerFrame) {
-      counter += 1;
-
       for (var i = 0; i < ships.length; i++) {
-        var ship = ships[i];
-
-        ship.vel = ship.vel.add(ship.accel);
-        ship.pos = ship.pos.add(ship.vel);
+        ships[i].update();
       }
 
       timeCounter -= millisecondsPerFrame;
@@ -86,25 +70,19 @@ $(document).ready(function() {
 
   function keyDown(event) {
     var handled = true;
-    var action = null;
 
     switch (event.keyCode) {
 
     case UP_KEY:
-      action = "up";
-      break;
-
-    case DOWN_KEY:
-      action = "down";
+      player.toggleEngine(true);
       break;
 
     case LEFT_KEY:
-      action = "left";
+      player.startTurning("left");
       break;
 
     case RIGHT_KEY:
-      action = "right";
-      // position.x += 10;
+      player.startTurning("right");
       break;
 
     default:
@@ -113,14 +91,40 @@ $(document).ready(function() {
     }
 
     if (handled) {
-      player.accel = new Vec2(0.001, 0);
-      ws.send(action);
+      event.preventDefault();
+    }
+  }
+
+  function keyUp(event) {
+    var handled = true;
+
+    switch (event.keyCode) {
+
+    case UP_KEY:
+      player.toggleEngine(false);
+      break;
+
+    case LEFT_KEY:
+      player.stopTurning("left");
+      break;
+
+    case RIGHT_KEY:
+      player.stopTurning("right");
+      break;
+
+    default:
+      handled = false;
+      break;
+    }
+
+    if (handled) {
       event.preventDefault();
     }
   }
 
   function run() {
     window.onkeydown = keyDown;
+    window.onkeyup = keyUp;
 
     window.requestAnimationFrame(function(time) {
       loop(time);
@@ -128,23 +132,4 @@ $(document).ready(function() {
   }
 
   run();
-
-  ws.onmessage = function(msg) {
-    console.log(msg.data);
-    worldState = JSON.parse(msg.data);
-
-    for (var i = 0; i < worldState.ships.length; i++) {
-      for (var j = 0; j < ships.length; j++) {
-        if (ships[j].id === worldState.ships[i].id) {
-          ships[j].accel.x = worldState.ships[i].accel.x;
-          ships[j].accel.y = worldState.ships[i].accel.y;
-          ships[j].vel.x = worldState.ships[i].vel.x;
-          ships[j].vel.y = worldState.ships[i].vel.y;
-          ships[j].pos.x = worldState.ships[i].pos.x;
-          ships[j].pos.y = worldState.ships[i].pos.y;
-          break;
-        }
-      }
-    }
-  }
 });

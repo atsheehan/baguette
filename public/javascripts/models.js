@@ -32,3 +32,46 @@ Vec2.prototype.rotate = function(radians) {
 
   return new Vec2(this.x * cos - this.y * sin, this.x * sin + this.y * cos);
 }
+
+var Ship = function(id, pos) {
+  this.id = id;
+  this.pos = pos;
+  this.vel = new Vec2(0, 0);
+  this.accel = new Vec2(0, 0);
+  this.heading = new Vec2(1, 0);
+
+  this.engineOn = false;
+  this.thrust = 0.1;
+  this.rotating = null;
+}
+
+Ship.prototype.startTurning = function(direction) {
+  this.rotating = direction;
+}
+
+Ship.prototype.stopTurning = function(direction) {
+  if (direction === this.rotating) {
+    this.rotating = null;
+  }
+}
+
+Ship.prototype.toggleEngine = function(value) {
+  this.engineOn = value;
+}
+
+Ship.prototype.update = function() {
+  if (this.engineOn) {
+    this.accel = this.heading.scale(this.thrust);
+  } else {
+    this.accel = new Vec2(0, 0);
+  }
+
+  if (this.rotating === "left") {
+    this.heading = this.heading.rotate(-Math.PI / 20);
+  } else if (this.rotating === "right") {
+    this.heading = this.heading.rotate(Math.PI / 20);
+  }
+
+  this.vel = this.vel.add(this.accel);
+  this.pos = this.pos.add(this.vel);
+}
