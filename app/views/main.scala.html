@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, username: Option[String])(content: Html)
 <!DOCTYPE html>
 
 <html>
@@ -7,9 +7,21 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
     <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     <script src="@routes.Assets.at("javascripts/vendor/jquery-2.1.3.min.js")"></script>
-
   </head>
   <body>
+    <nav>
+      <ul>
+        @username match {
+          case Some(username) => {
+            <li><a>Signed in as @username</a></li>
+            <li><a href="@routes.Sessions.close">Sign out</a></li>
+          }
+          case None => {
+            <li><a href="@routes.Sessions.start">Sign In</a></li>
+          }
+        }
+      </ul>
+    </nav>
     @content
   </body>
 </html>

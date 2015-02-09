@@ -1,3 +1,5 @@
-@main("Space Wars") {
-  <a href="@routes.Game.index()">Play Space Wars!</a>
+@()(implicit username: Option[String])
+
+@main("BAGUETTE", username) {
+  <a href="@routes.Game.index()">Play Game</a>
 }

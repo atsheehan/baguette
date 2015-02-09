@@ -9,5 +9,9 @@ GET    /                           controllers.Home.index
 GET    /game                       controllers.Game.index
 GET    /game/socket                controllers.Game.gameSocket
 
+GET    /sign_in                    controllers.Sessions.start
+GET    /sign_out                   controllers.Sessions.close
+GET    /auth/github/callback       controllers.Sessions.authenticate(code: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET    /assets/*file               controllers.Assets.at(path="/public", file)
