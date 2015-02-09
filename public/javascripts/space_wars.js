@@ -113,6 +113,7 @@ $(document).ready(function() {
     }
 
     if (handled) {
+      player.accel = new Vec2(0.001, 0);
       ws.send(action);
       event.preventDefault();
     }
