@@ -1,5 +1,7 @@
 @()(implicit username: Option[String])
 
 @main("BAGUETTE", username) {
-  <a href="@routes.Game.index()">Play Game</a>
+  @username.map { _ =>
+    <a href="@routes.Game.index()">Play Game</a>
+  }
 }

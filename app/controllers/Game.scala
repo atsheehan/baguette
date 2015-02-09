@@ -20,8 +20,8 @@ object Game extends Controller {
   Akka.system.scheduler.schedule(0 milliseconds, 50 milliseconds,
     world, World.Update())
 
-  def index = Action { request =>
-    Ok(views.html.game.index(request))
+  def index = Action { implicit request =>
+    Ok(views.html.game.index())
   }
 
   def gameSocket = WebSocket.async { request =>
