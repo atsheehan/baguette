@@ -20,7 +20,7 @@ $(document).ready(function() {
     id: 0,
     pos: new Vec2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
     vel: new Vec2(0, 0),
-    accel: new Vec2(0.1, 0.2),
+    accel: new Vec2(0, 0),
     heading: new Vec2(0, -1)
   }
 
