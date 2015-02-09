@@ -1,4 +1,19 @@
 $(document).ready(function() {
+  function drawTriangle(pos, heading, radius, color) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+
+    var firstLeg = heading.lengthTo(radius);
+    var secondLeg = firstLeg.rotate(3 * Math.PI / 4);
+    var thirdLeg = firstLeg.rotate(5 * Math.PI / 4);
+
+    ctx.beginPath();
+    ctx.moveTo(pos.x + firstLeg.x, pos.y + firstLeg.y);
+    ctx.lineTo(pos.x + secondLeg.x, pos.y + secondLeg.y);
+    ctx.lineTo(pos.x + thirdLeg.x, pos.y + thirdLeg.y);
+    ctx.fill();
+  }
+
   function drawCircle(x, y, radius, color) {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
@@ -30,7 +45,7 @@ $(document).ready(function() {
     ctx.clearRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     for (var i = 0; i < ships.length; i++) {
-      drawCircle(ships[i].pos.x, ships[i].pos.y, 30, "blue");
+      drawTriangle(ships[i].pos, ships[i].heading, 30, "blue");
     }
   }
 
