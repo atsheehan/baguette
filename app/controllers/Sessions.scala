@@ -24,7 +24,6 @@ object Sessions extends Controller {
   }
 
   private def getUsername(code: String): Option[String] = {
-    println("got here")
     getAccessToken(code) match {
       case Some(token) => {
         val request = WS.url(UserDetailsUrl)
@@ -41,7 +40,6 @@ object Sessions extends Controller {
     Redirect(routes.Home.index).withSession(request.session + ("user.name" -> username))
 
   private def getAccessToken(code: String): Option[String] = {
-    println("hi")
     val request = WS.url(OAuthAccessTokenUrl)
       .withHeaders("Accept" -> "application/json")
       .post(Map(
