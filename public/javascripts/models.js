@@ -35,19 +35,6 @@ var Vec2 = {
 }
 
 var Ship = {
-  build: function(id, pos) {
-    return {
-      id: id,
-      pos: pos,
-      vel: Vec2.build(0, 0),
-      accel: Vec2.build(0, 0),
-      heading: Vec2.build(1, 0),
-      engineOn: false,
-      thrust: 0.1,
-      rotating: null
-    }
-  },
-
   startTurning: function(ship, direction) {
     ship.rotating = direction;
   },

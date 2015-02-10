@@ -1,5 +1,7 @@
 package models
 
+import scala.util.Random
+
 object Rotation extends Enumeration {
   val Clockwise = Value("Clockwise")
   val CounterClockwise = Value("CounterClockwise")
@@ -14,7 +16,6 @@ class Ship(val id: String, x: Float, y: Float) {
   private var _engineOn = false
   private var _rotating: Option[Rotation.Value] = None
 
-  private val Thrust = 0.1f
   private val RotationSpeed = (Math.PI / 20f).asInstanceOf[Float]
 
   def pos = _pos
@@ -23,11 +24,16 @@ class Ship(val id: String, x: Float, y: Float) {
   def heading = _heading
   def engineOn = _engineOn
   def rotating = _rotating
-  def thrust = Thrust
+  val thrust = 0.1f
+
+  val red = Random.nextInt(255 - 64) + 64
+  val green = Random.nextInt(255 - 64) + 64
+  val blue = Random.nextInt(255 - 64) + 64
+  val color = s"rgb($red, $green, $blue)"
 
   def update() {
     if (engineOn) {
-      _accel = heading.scale(Thrust)
+      _accel = heading.scale(thrust)
     } else {
       _accel = Vec2.ZERO
     }

@@ -40,7 +40,8 @@ class World extends Actor {
           ),
           "thrust" -> ship.thrust,
           "engineOn" -> ship.engineOn,
-          "rotating" -> JsString(ship.rotating.map(_.toString).getOrElse("None"))
+          "rotating" -> JsString(ship.rotating.map(_.toString).getOrElse("None")),
+          "color" -> ship.color
         )
       }
     )

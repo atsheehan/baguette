@@ -7,7 +7,7 @@ function draw() {
   view.clearScreen();
 
   world.ships.forEach(function(ship) {
-    view.drawTriangle(ship.pos, ship.heading, 30, "blue");
+    view.drawTriangle(ship.pos, ship.heading, 30, ship.color);
   });
 }
 
