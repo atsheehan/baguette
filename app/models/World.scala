@@ -11,7 +11,6 @@ class World extends Actor {
 
   val (enumerator, channel) = Concurrent.broadcast[String]
 
-  private var shipIndex = 0
   private var ships = List[Ship]()
   private val framesPerSecond = 30.0
   private val millisecondsPerFrame = ((1.0 / framesPerSecond) * 1000L).asInstanceOf[Long]
@@ -59,27 +58,29 @@ class World extends Actor {
       }
     }
 
-    case Join() => {
-      val ship = new Ship(shipIndex, 100f, 100f)
+    case Join(id) => {
+      if (!ships.exists(_.id == id)) {
+        val ship = new Ship(id, 100f, 100f)
 
-      ships = ship :: ships
+        ships = ship :: ships
 
-      val iteratee = Iteratee.foreach[String] { command =>
-        command match {
-          case "engineOn" => ship.toggleEngine(true)
-          case "engineOff" => ship.toggleEngine(false)
-          case "startTurnCC" => ship.startTurning(Rotation.CounterClockwise)
-          case "startTurnC" => ship.startTurning(Rotation.Clockwise)
-          case "stopTurnCC" => ship.stopTurning(Rotation.CounterClockwise)
-          case "stopTurnC" => ship.stopTurning(Rotation.Clockwise)
+        val iteratee = Iteratee.foreach[String] { command =>
+          command match {
+            case "engineOn" => ship.toggleEngine(true)
+            case "engineOff" => ship.toggleEngine(false)
+            case "startTurnCC" => ship.startTurning(Rotation.CounterClockwise)
+            case "startTurnC" => ship.startTurning(Rotation.Clockwise)
+            case "stopTurnCC" => ship.stopTurning(Rotation.CounterClockwise)
+            case "stopTurnC" => ship.stopTurning(Rotation.Clockwise)
+          }
+
+          ship.accelerate()
+        }.map { _ =>
+          self ! Leave(ship.id)
         }
 
-        ship.accelerate()
-      }.map { _ =>
-        self ! Leave(ship.id)
+        sender ! (iteratee, enumerator)
       }
-
-      sender ! (iteratee, enumerator)
     }
 
     case Broadcast() => {
@@ -93,8 +94,8 @@ class World extends Actor {
 }
 
 object World {
-  case class Join()
+  case class Join(id: String)
   case class Update()
   case class Broadcast()
-  case class Leave(id: Int)
+  case class Leave(id: String)
 }

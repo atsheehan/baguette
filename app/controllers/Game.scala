@@ -7,6 +7,7 @@ import models.World
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import play.api.libs.iteratee.{Enumerator, Iteratee}
+import play.api.mvc.RequestHeader
 import play.api.mvc.{Action, Controller, WebSocket, Result}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,9 +32,12 @@ object Game extends Controller {
     request.session.get("user.name") match {
       case None => Future.successful(Left(Forbidden("Forbidden")))
       case Some(username) => {
-        val channel = world ? World.Join()
+        val channel = world ? World.Join(username)
         channel.mapTo[(Iteratee[String, _], Enumerator[String])].map(Right(_))
       }
     }
   }
+
+  implicit def username(implicit request: RequestHeader): String =
+    request.session.get("user.name").getOrElse("")
 }

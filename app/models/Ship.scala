@@ -5,7 +5,7 @@ object Rotation extends Enumeration {
   val CounterClockwise = Value("CounterClockwise")
 }
 
-class Ship(val id: Int, x: Float, y: Float) {
+class Ship(val id: String, x: Float, y: Float) {
   private var _pos = Vec2(x, y)
   private var _vel = Vec2.ZERO
   private var _accel = Vec2.ZERO
