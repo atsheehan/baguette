@@ -11,9 +11,9 @@ View.prototype.drawTriangle = function(pos, heading, radius, color) {
   this.context.strokeStyle = color;
   this.context.fillStyle = color;
 
-  var firstLeg = heading.lengthTo(radius);
-  var secondLeg = firstLeg.rotate(3 * Math.PI / 4);
-  var thirdLeg = firstLeg.rotate(5 * Math.PI / 4);
+  var firstLeg = Vec2.lengthTo(heading, radius);
+  var secondLeg = Vec2.rotate(firstLeg, 3 * Math.PI / 4);
+  var thirdLeg = Vec2.rotate(firstLeg, 5 * Math.PI / 4);
 
   this.context.beginPath();
   this.context.moveTo(pos.x + firstLeg.x, pos.y + firstLeg.y);

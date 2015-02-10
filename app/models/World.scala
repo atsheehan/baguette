@@ -1,5 +1,6 @@
 package models
 
+import play.api.libs.json.JsString
 import play.api.libs.json.Json
 import akka.actor.Actor
 import play.api.libs.iteratee.{Concurrent, Iteratee}
@@ -36,7 +37,10 @@ class World extends Actor {
           "pos" -> Json.obj(
             "x" -> ship.pos.x,
             "y" -> ship.pos.y
-          )
+          ),
+          "thrust" -> ship.thrust,
+          "engineOn" -> ship.engineOn,
+          "rotating" -> JsString(ship.rotating.map(_.toString).getOrElse("None"))
         )
       }
     )

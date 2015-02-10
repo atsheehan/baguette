@@ -1,77 +1,81 @@
-var Vec2 = function(x, y) {
-  this.x = x;
-  this.y = y;
-}
+var Vec2 = {
+  build: function(x, y) {
+    return { "x": x, "y": y };
+  },
 
-Vec2.prototype.add = function(that) {
-  return new Vec2(this.x + that.x, this.y + that.y);
-}
+  add: function(a, b) {
+    return this.build(a.x + b.x, a.y + b.y);
+  },
 
-Vec2.prototype.magnitude = function() {
-  return Math.sqrt(this.x * this.x + this.y * this.y);
-}
+  magnitude: function(vec) {
+    return Math.sqrt(vec.x * vec.x + vec.y * vec.y);
+  },
 
-Vec2.prototype.normalize = function() {
-  var magnitude = this.magnitude();
+  normalize: function(vec) {
+    var magnitude = this.magnitude(vec);
 
-  if (magnitude === 0) return new Vec(0, 0)
-  else return new Vec2(this.x / magnitude, this.y / magnitude);
-}
+    if (magnitude === 0) return this.build(0, 0);
+    else return Vec2.build(vec.x / magnitude, vec.y / magnitude);
+  },
 
-Vec2.prototype.scale = function(factor) {
-  return new Vec2(this.x * factor, this.y * factor);
-}
+  scale: function(vec, factor) {
+    return Vec2.build(vec.x * factor, vec.y * factor);
+  },
 
-Vec2.prototype.lengthTo = function(length) {
-  return this.normalize().scale(length);
-}
+  lengthTo: function(vec, length) {
+    return this.scale(this.normalize(vec), length);
+  },
 
-Vec2.prototype.rotate = function(radians) {
-  var cos = Math.cos(radians);
-  var sin = Math.sin(radians);
+  rotate: function(vec, radians) {
+    var cos = Math.cos(radians);
+    var sin = Math.sin(radians);
 
-  return new Vec2(this.x * cos - this.y * sin, this.x * sin + this.y * cos);
-}
-
-var Ship = function(id, pos) {
-  this.id = id;
-  this.pos = pos;
-  this.vel = new Vec2(0, 0);
-  this.accel = new Vec2(0, 0);
-  this.heading = new Vec2(1, 0);
-
-  this.engineOn = false;
-  this.thrust = 0.1;
-  this.rotating = null;
-}
-
-Ship.prototype.startTurning = function(direction) {
-  this.rotating = direction;
-}
-
-Ship.prototype.stopTurning = function(direction) {
-  if (direction === this.rotating) {
-    this.rotating = null;
+    return Vec2.build(vec.x * cos - vec.y * sin, vec.x * sin + vec.y * cos);
   }
 }
 
-Ship.prototype.toggleEngine = function(value) {
-  this.engineOn = value;
-}
+var Ship = {
+  build: function(id, pos) {
+    return {
+      id: id,
+      pos: pos,
+      vel: Vec2.build(0, 0),
+      accel: Vec2.build(0, 0),
+      heading: Vec2.build(1, 0),
+      engineOn: false,
+      thrust: 0.1,
+      rotating: null
+    }
+  },
 
-Ship.prototype.update = function() {
-  if (this.engineOn) {
-    this.accel = this.heading.scale(this.thrust);
-  } else {
-    this.accel = new Vec2(0, 0);
+  startTurning: function(ship, direction) {
+    ship.rotating = direction;
+  },
+
+  stopTurning: function(ship, direction) {
+    if (direction === ship.rotating) {
+      ship.rotating = "None";
+    }
+  },
+
+  toggleEngine: function(ship, value) {
+    ship.engineOn = value;
+  },
+
+  update: function(ship) {
+    if (ship.engineOn) {
+      ship.accel = Vec2.scale(ship.heading, ship.thrust);
+    } else {
+      ship.accel = Vec2.build(0, 0);
+    }
+
+    if (ship.rotating === "CounterClockwise") {
+      ship.heading = Vec2.rotate(ship.heading, -Math.PI / 20);
+    } else if (ship.rotating === "Clockwise") {
+      ship.heading = Vec2.rotate(ship.heading, Math.PI / 20);
+    }
+
+    ship.vel = Vec2.add(ship.vel, ship.accel);
+    ship.pos = Vec2.add(ship.pos, ship.vel);
   }
-
-  if (this.rotating === "counter-clockwise") {
-    this.heading = this.heading.rotate(-Math.PI / 20);
-  } else if (this.rotating === "clockwise") {
-    this.heading = this.heading.rotate(Math.PI / 20);
-  }
-
-  this.vel = this.vel.add(this.accel);
-  this.pos = this.pos.add(this.vel);
 }

@@ -23,6 +23,7 @@ class Ship(val id: String, x: Float, y: Float) {
   def heading = _heading
   def engineOn = _engineOn
   def rotating = _rotating
+  def thrust = Thrust
 
   def update() {
     if (engineOn) {

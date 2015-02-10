@@ -1,13 +1,14 @@
 var view = new View(document.getElementById("game-canvas"));
-var player = new Ship(0, new Vec2(100, 100));
-var ships = [player];
+var player = null;
+var playerId = "atsheehan";
+var world = {"ships": []};
 
 function draw() {
   view.clearScreen();
 
-  for (var i = 0; i < ships.length; i++) {
-    view.drawTriangle(ships[i].pos, ships[i].heading, 30, "blue");
-  }
+  world.ships.forEach(function(ship) {
+    view.drawTriangle(ship.pos, ship.heading, 30, "blue");
+  });
 }
 
 var framesPerSecond = 30;
@@ -21,9 +22,9 @@ function tick(milliseconds) {
   timeCounter += timeElapsed;
 
   while (timeCounter > millisecondsPerFrame) {
-    for (var i = 0; i < ships.length; i++) {
-      ships[i].update();
-    }
+    world.ships.forEach(function(ship) {
+      Ship.update(ship);
+    });
 
     timeCounter -= millisecondsPerFrame;
   }
@@ -44,17 +45,23 @@ function keyDown(event) {
   switch (event.keyCode) {
 
   case UP_KEY:
-    player.toggleEngine(true);
+    if (player) {
+      Ship.toggleEngine(player, true);
+    }
     ws.send("engineOn")
     break;
 
   case LEFT_KEY:
-    player.startTurning("counter-clockwise");
+    if (player) {
+      Ship.startTurning(player, "CounterClockwise");
+    }
     ws.send("startTurnCC")
     break;
 
   case RIGHT_KEY:
-    player.startTurning("clockwise");
+    if (player) {
+      Ship.startTurning(player, "Clockwise");
+    }
     ws.send("startTurnC")
     break;
 
@@ -74,17 +81,23 @@ function keyUp(event) {
   switch (event.keyCode) {
 
   case UP_KEY:
-    player.toggleEngine(false);
+    if (player) {
+      Ship.toggleEngine(player, false);
+    }
     ws.send("engineOff")
     break;
 
   case LEFT_KEY:
-    player.stopTurning("counter-clockwise");
+    if (player) {
+      Ship.stopTurning(player, "CounterClockwise");
+    }
     ws.send("stopTurnCC")
     break;
 
   case RIGHT_KEY:
-    player.stopTurning("clockwise");
+    if (player) {
+      Ship.stopTurning(player, "Clockwise");
+    }
     ws.send("stopTurnC")
     break;
 
@@ -107,27 +120,15 @@ function run() {
   });
 }
 
-ws = new WebSocket(document.getElementById("websocket-url").dataset.url);
+var ws = new WebSocket(document.getElementById("websocket-url").dataset.url);
 
 ws.onmessage = function(message) {
-  data = JSON.parse(message.data);
+  world = JSON.parse(message.data);
 
-  for (var i = 0; i < data.ships.length; i++) {
-    var shipData = data.ships[i];
-
-    for (var j = 0; j < ships.length; j++) {
-      if (shipData.id === ships[j].id) {
-        var ship = ships[j];
-
-        ship.pos.x = shipData.pos.x;
-        ship.pos.y = shipData.pos.y;
-        ship.heading.x = shipData.heading.x;
-        ship.heading.y = shipData.heading.y;
-        ship.vel.x = shipData.vel.x;
-        ship.vel.y = shipData.vel.y;
-        ship.accel.x = shipData.accel.x;
-        ship.accel.y = shipData.accel.y;
-      }
+  for (var i = 0; i < world.ships.length; i++) {
+    if (world.ships[i].id === playerId) {
+      player = world.ships[i];
+      break;
     }
   }
 }
