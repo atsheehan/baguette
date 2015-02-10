@@ -7,6 +7,21 @@ View.prototype.clearScreen = function() {
   this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 }
 
+View.prototype.displayPlayerIds = function(ships) {
+  var view = this;
+  var fontSize = 26;
+  var y = fontSize;
+
+  view.context.font = fontSize + "px courier";
+
+  ships.forEach(function(ship) {
+    view.context.fillStyle = ship.color;
+    view.context.fillText(ship.id, 0, y);
+
+    y += fontSize;
+  });
+};
+
 View.prototype.drawTriangle = function(pos, heading, radius, color) {
   this.context.strokeStyle = color;
   this.context.fillStyle = color;

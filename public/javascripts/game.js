@@ -1,10 +1,12 @@
 var view = new View(document.getElementById("game-canvas"));
 var player = null;
-var playerId = "atsheehan";
+
 var world = {"ships": []};
 
 function draw() {
   view.clearScreen();
+
+  view.displayPlayerIds(world.ships);
 
   world.ships.forEach(function(ship) {
     view.drawTriangle(ship.pos, ship.heading, 30, ship.color);
@@ -121,6 +123,7 @@ function run() {
 }
 
 var ws = new WebSocket(document.getElementById("websocket-url").dataset.url);
+var playerId = document.getElementById("player-id").dataset.username;
 
 ws.onmessage = function(message) {
   world = JSON.parse(message.data);
